@@ -10,7 +10,7 @@ Collection de tous les projets développés à l'école 42.
 | [Libft](Libft/) | Bibliothèque C personnalisée |
 | [Printf](Printf/) | Réimplémentation de printf() |
 | [GetNextLine](GetNextLine/) | Lecture de fichiers ligne par ligne |
-| [Push_swap](PushSwap/) | Algorithme de tri avec 2 stacks |
+| [PushSwap](PushSwap/) | Algorithme de tri avec 2 stacks |
 | [SoLong](SoLong/) | Jeu 2D avec graphiques |
 | [Philosopher](Philosopher/) | Threading et synchronisation |
 | [Pipex](Pipex/) | Reproduction des pipes Unix |
