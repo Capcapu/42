@@ -6,7 +6,7 @@
 /*   By: csolari <csolari@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/29 14:43:57 by csolari           #+#    #+#             */
-/*   Updated: 2024/12/04 11:15:28 by csolari          ###   ########.fr       */
+/*   Updated: 2026/01/13 14:13:47 by csolari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ int	ft_printf(const char *arg0, ...)
 // {
 // 	// i = ft_printf("%u, et oui 100%% hep\n", 654);
 // 	ft_printf(" NULL %x NULL ", 255);
-//	printf("\n");
+// 	printf("\n");
 // 	printf(" NULL %x NULL ", 255);
 // 	return(1);
 // }
