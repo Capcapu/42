@@ -1,0 +1,104 @@
+FORD-JOHNSON (MERGE-INSERTION) - FICHE RECAP
+
+Objectif:
+Minimiser le nombre de comparaisons pour trier une liste.
+
+============================================================
+1) Entree / sortie
+============================================================
+Entree  : vector<int> input
+Sortie  : vector<int> trie
+
+Cas de base:
+- si taille <= 1 -> deja trie
+
+============================================================
+2) Pairing (former les paires)
+============================================================
+Pour chaque paire (x, y):
+- a_i = max(x, y)
+- b_i = min(x, y)
+
+Si la taille est impaire:
+- garder le dernier element a part (straggler / lonely)
+
+Structure utile:
+- pairs = [(a1,b1), (a2,b2), ..., (an,bn)]
+
+============================================================
+3) Trier les paires selon a_i (les grands)
+============================================================
+But: obtenir a1 <= a2 <= ... <= an
+
+- trier les a_i avec la meme logique Ford-Johnson (recursif)
+
+============================================================
+4) Construire la main chain et la pend chain
+============================================================
+Apres tri des paires:
+- mainChain = [b1, a1, a2, ..., an]
+- pend = [b2, b3, ..., bn]
+
+Important:
+- b1 est deja place dans la chaine principale.
+
+============================================================
+5) Suite de Jacobsthal (ordre d'insertion des b_i)
+============================================================
+Definition:
+- J(0)=0
+- J(1)=1
+- J(k)=J(k-1)+2*J(k-2)
+
+Valeurs:
+- 0, 1, 1, 3, 5, 11, 21, 43, ...
+
+Utilisation:
+- Jacobsthal sert a definir l'ORDRE d'insertion des b_i (pas a trier les a_i).
+
+Ordre des indices a inserer:
+- b1 deja dans mainChain
+- puis blocs decroissants entre bornes Jacobsthal:
+	b3,b2 ; b5,b4 ; b11..b6 ; b21..b12 ; etc.
+- s'arreter a bn
+
+Exemple (n=8 paires):
+- ordre: b3, b2, b5, b4, b8, b7, b6
+
+============================================================
+6) Insertion binaire bornee
+============================================================
+Pour chaque b_i dans l'ordre Jacobsthal:
+1) retrouver la position actuelle de a_i dans mainChain
+2) faire une recherche binaire uniquement dans [debut, position(a_i))
+3) inserer b_i a la position trouvee
+
+Pourquoi borne sur a_i ?
+- car b_i <= a_i, donc inutile de chercher apres a_i.
+
+============================================================
+7) Element impair (straggler)
+============================================================
+S'il existe:
+- insertion binaire classique dans toute la mainChain a la fin.
+
+============================================================
+8) Pseudo-checklist implementation
+============================================================
+1. Parser et valider les entrees
+2. Former les paires (a_i,b_i) + straggler eventuel
+3. Trier les paires par a_i
+4. mainChain = [b1, a1..an]
+5. Construire l'ordre Jacobsthal des indices i >= 2
+6. Inserer chaque b_i par recherche binaire bornee avant a_i
+7. Inserer straggler si present
+8. mainChain = resultat trie
+
+
+
+
+
+
+
+
+./PmergeMe $(shuf -i 1-1000 -n 100 | tr '\n' ' ')
