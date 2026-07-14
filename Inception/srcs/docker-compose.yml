@@ -1,0 +1,85 @@
+# Pour les fichier docker compose l'identition est crutiale!
+# Le docker compose file est compose de 3 parties : 
+# - services : definition des conteneurs
+# - volumes : stockage persistant des donnees
+# - networks : communication entre les conteneurs
+
+# services : on declare les differents containers que l on veut creer et leur configuration
+services:
+  mariadb:
+    container_name: mariadb
+    image: mariadb
+    build:                              # build permet de construire l'image depuis un dockerfile
+      context: ./requirements/mariadb
+      dockerfile: Dockerfile
+    networks:                           # a quel network le container appartient, connecte au reseau ionterne
+      - inception
+    env_file: .env                      # le fichier ou sont stockes les variables d environnement
+    restart: always                     # redemarre automatiquement les conteneurs si crash
+    volumes:                            # donnes sauvegardees meme si conteneur supprime
+      - mariadb:/var/lib/mysql
+    healthcheck:                        # verifie que mariadb est pret
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -p\"$${DB_ROOT_PASSWORD}\" --silent || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    
+
+  wordpress:
+    container_name: wordpress
+    image: wordpress
+    build:
+      context: ./requirements/wordpress
+      dockerfile: Dockerfile
+    networks:
+      - inception
+    env_file: .env
+    restart: always
+    volumes:
+      - wordpress:/var/www/html
+    depends_on:                         # wordpress demarre seulement si maridb est ready
+      mariadb:
+        condition: service_healthy
+
+  nginx:
+    container_name: nginx
+    image: nginx
+    env_file: .env
+    depends_on:
+      - wordpress
+    networks:
+      - inception
+    build:
+      context: ./requirements/nginx
+      dockerfile: Dockerfile
+    restart: always
+    ports:                              # seul nginx est expose a l'exterieur, expose https
+      - "443:443"
+    volumes:                            # partage fichiers WP avec PHP_FPM, necessaire pour servir les fichiers
+      - wordpress:/var/www/html
+
+
+# volumes : stockage persistants des donnees sur la machine hote
+
+volumes:
+  wordpress:
+    driver: local                               # ici nous stockons le volume en local
+    driver_opts:                                # on utiise un volume mapped
+      type: 'none' 								            	# aucun type spécifique
+      o: 'bind'
+      device: '/home/csolari/data/wordpress' 		# Ou stocker le dossier volume sur votre ordinateur en local
+  mariadb:
+    driver: local
+    driver_opts:
+      type: 'none' 
+      o: 'bind'
+      device: '/home/csolari/data/mariadb'		  ######### PATH A CHANGER SELON LA MACHINE #########
+
+
+# networks : permet aux containers de communiquer entre eux
+
+networks:
+  inception:                              # reseau interne via Docker
+    driver: bridge                        # type de reseau pour creer reseau independants de la machine host
+
+
